@@ -28,7 +28,7 @@ jobs:
       - name: Create .env.prod file
         run: |
           echo "DOMAIN='${{ vars.DOMAIN }}'" > services/api/.env.prod
-          echo "SUBDOMAINL='${{ vars.API_SUBDOMAIN }}'" >> services/api/.env.prod
+          echo "SUBDOMAIN='${{ vars.SUBDOMAIN }}'" >> services/api/.env.prod
           echo "FRONTEND_URL='${{ vars.FRONTEND_URL }}'" >> services/api/.env.prod
           echo "MONGO_URI='${{ secrets.MONGO_URI }}'" >> services/api/.env.prod
           echo "GOOGLE_OAUTH_CLIENT_ID='${{ vars.GOOGLE_OAUTH_CLIENT_ID }}'" >> services/api/.env.prod
