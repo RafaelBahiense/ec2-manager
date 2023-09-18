@@ -1,0 +1,42 @@
+name: Deploy API
+
+on:
+  release:
+    types:
+      - released
+    tags:
+      - "api_*"
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "lts/*"
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Create .env.prod file
+        run: |
+          echo "DOMAIN='${{ vars.DOMAIN }}'" > .env.prod
+          echo "SUBDOMAINL='${{ vars.API_SUBDOMAIN }}'" >> .env.prod
+          echo "FRONTEND_URL='${{ vars.FRONTEND_URL }}'" >> .env.prod
+          echo "MONGO_URI='${{ secrets.MONGO_URI }}'" >> .env.prod
+          echo "GOOGLE_OAUTH_CLIENT_ID='${{ vars.GOOGLE_OAUTH_CLIENT_ID }}'" >> .env.prod
+          echo "GOOGLE_OAUTH_CLIENT_SECRET='${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}'" >> .env.prod
+          echo "GOOGLE_OAUTH_REDIRECT='${{ vars.GOOGLE_OAUTH_REDIRECT }}'" >> .env.prod
+
+      - name: serverless deploy
+        uses: serverless/github-action@v3.2
+        with:
+          args: deploy --stage prod
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
