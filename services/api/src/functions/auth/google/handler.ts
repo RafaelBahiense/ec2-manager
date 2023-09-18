@@ -22,19 +22,19 @@ const google: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
   const db = await connect();
   let statusCode = 200;
 
-  const user = await db
+  let user = await db
     .collection("users")
     .findOneAndUpdate({ email }, { $set: { name, picture } });
 
   if (!user) {
     await db.collection("users").insertOne({ name, email, picture });
+    user = await db.collection("users").findOne({ email });
     statusCode = 201;
   }
 
   const res = formatJSONResponse(user);
   res.statusCode = statusCode;
   return createSessionCookie(res, email);
-  return res;
 };
 
 export const main = middyfy(google);
