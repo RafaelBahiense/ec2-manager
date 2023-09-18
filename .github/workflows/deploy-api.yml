@@ -1,12 +1,13 @@
 name: Deploy API
 
 on:
-  release:
-    types:
-      - released
-      - prereleased
-    tags:
-      - "api_*"
+  workflow_dispatch:
+#   release:
+#     types:
+#       - released
+#       - prereleased
+#     tags:
+#       - "api_*"
 
 jobs:
   build-deploy:

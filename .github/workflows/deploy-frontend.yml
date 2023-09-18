@@ -1,12 +1,14 @@
 name: Deploy Frontend
 
 on:
-  release:
-    types:
-      - released
-      - prereleased
-    tags:
-      - "frontend_*"
+  workflow_dispatch:
+
+#   release:
+#     types:
+#       - released
+#       - prereleased
+#     tags:
+#       - "frontend_*"
 
 jobs:
   build:
