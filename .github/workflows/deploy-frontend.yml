@@ -29,7 +29,7 @@ jobs:
       - name: Create .env.production file
         run: |
           echo "VITE_GOOGLE_OAUTH_CLIENT_ID='${{ vars.GOOGLE_OAUTH_CLIENT_ID }}'" > apps/frontend/.env.production
-          echo "VITE_API_URL='${{ vars.API_URL }}'" >> apps/frontend/.env.production
+          echo "VITE_API_URL='${{ vars.VITE_API_URL }}'" >> apps/frontend/.env.production
 
       - name: Build
         run: yarn build
