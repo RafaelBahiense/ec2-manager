@@ -33,12 +33,13 @@ jobs:
 
       - name: Build
         run: yarn build
+        working-directory: apps/frontend
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: trinks-express-build
-          path: dist
+          path: apps/frontenddist
 
   deploy:
     runs-on: ubuntu-latest
