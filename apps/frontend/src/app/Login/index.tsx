@@ -1,13 +1,14 @@
 import { AuthContextType } from "@/contexts/AuthContext";
 import { useAuthContext } from "@/hooks/useAuthContext";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
-import { Card, Typography } from "antd";
+import { Typography } from "antd";
+import { useState } from "react";
 
 const { Title } = Typography;
 
 export default function Login() {
   return (
-    <div>
+    <div className="h-screen flex justify-center items-center bg-gray-200">
       <LoginForm />
     </div>
   );
@@ -16,33 +17,26 @@ export default function Login() {
 function LoginForm() {
   const authContext = useAuthContext();
 
+  const [loginError, setLoginError] = useState(false);
+
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        backgroundColor: "#f0f2f5",
-      }}
-    >
-      <Card style={{ width: 500 }}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            flexDirection: "column",
-          }}
-        >
-          <Title level={2}>EC2 Manager</Title>
-          <GoogleLogin
-            onSuccess={(data) => googleLogin(data, authContext)}
-            onError={() => {
-              console.log("Login Failed");
-            }}
-          />
-        </div>
-      </Card>
+    <div className="bg-white p-8 rounded shadow-md w-96 flex flex-col items-center">
+      <Title level={2} className="mb-4">
+        EC2 Manager
+      </Title>
+
+      <GoogleLogin
+        onSuccess={(data) => {
+          googleLogin(data, authContext);
+          setLoginError(false);
+        }}
+        onError={() => {
+          setLoginError(true);
+        }}
+      />
+      {loginError && (
+        <p className="mt-4 text-red-500">Login failed. Please try again.</p>
+      )}
     </div>
   );
 }
@@ -61,6 +55,5 @@ async function googleLogin(
     }),
   });
   const data = await response.json();
-  authContext.setUser(data);
-  console.log(data);
+  authContext.login(data);
 }

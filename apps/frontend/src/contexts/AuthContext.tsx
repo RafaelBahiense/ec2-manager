@@ -7,47 +7,47 @@ export type User = {
   picture: string;
 };
 
-export type SignInData = {
-  token: string;
-};
-
 export type AuthContextType = {
   isAuthenticated: boolean;
   user: User | null;
-  setUser: (user: User | null) => void;
-  clearUser: () => void;
+  login: (userData: User) => void;
+  logout: () => void;
 };
 
 export const AuthContext = createContext({} as AuthContextType);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
-  const [user, setUser] = useState<User | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [user, setUser] = useState<User | null>(() => {
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
 
   useEffect(() => {
     if (user) {
-      setIsAuthenticated(true);
+      localStorage.setItem("user", JSON.stringify(user));
       navigate({ to: "/" });
     } else {
-      setIsAuthenticated(false);
+      localStorage.removeItem("user");
       navigate({ to: "/login" });
     }
   }, [user]);
 
-  function clearUser() {
+  function login(userData: User) {
+    setUser(userData);
+  }
+
+  function logout() {
     setUser(null);
-    setIsAuthenticated(false);
-    navigate({ to: "/login" });
   }
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        isAuthenticated,
-        setUser,
-        clearUser,
+        isAuthenticated: !!user,
+        login,
+        logout,
       }}
     >
       {children}
