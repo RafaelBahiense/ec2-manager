@@ -10,3 +10,4 @@ jspm_packages
 
 # .env files
 .env.prod
+.env.dev

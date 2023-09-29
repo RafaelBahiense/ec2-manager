@@ -1,6 +1,6 @@
 import type { AWS } from "@serverless/typescript";
 
-import hello from "@functions/hello";
+import ec2list from "@functions/ec2/list";
 import google from "@functions/auth/google";
 
 const serverlessConfiguration: AWS = {
@@ -24,8 +24,65 @@ const serverlessConfiguration: AWS = {
       NODE_OPTIONS: "--enable-source-maps --stack-trace-limit=1000",
     },
   },
+  resources: {
+    Resources: {
+      ec2listRole: {
+        Type: "AWS::IAM::Role",
+        Properties: {
+          RoleName: "ec2listRole",
+          AssumeRolePolicyDocument: {
+            Version: "2012-10-17",
+            Statement: [
+              {
+                Effect: "Allow",
+                Principal: { Service: "lambda.amazonaws.com" },
+                Action: "sts:AssumeRole",
+              },
+            ],
+          },
+          Policies: [
+            {
+              PolicyName: "ec2listPolicy",
+              PolicyDocument: {
+                Version: "2012-10-17",
+                Statement: [
+                  {
+                    Effect: "Allow",
+                    Action: [
+                      "logs:CreateLogGroup",
+                      "logs:CreateLogStream",
+                      "logs:PutLogEvents",
+                      "logs:TagResource",
+                    ],
+                    Resource: [
+                      {
+                        "Fn::Join": [
+                          ":",
+                          [
+                            "arn:aws:logs",
+                            { Ref: "AWS::Region" },
+                            { Ref: "AWS::AccountId" },
+                            "log-group:/aws/lambda/*:*:*",
+                          ],
+                        ],
+                      },
+                    ],
+                  },
+                  {
+                    Effect: "Allow",
+                    Action: ["ec2:DescribeInstances"],
+                    Resource: ["*"],
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
   // import the function via paths
-  functions: { hello, google },
+  functions: { google, ec2list },
   package: { individually: true },
   custom: {
     esbuild: {

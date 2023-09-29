@@ -6,7 +6,7 @@ export function createSessionCookie(
 ) {
   const expirationDate = new Date(Date.now() + 60 * 60 * 1000 * 24 * 7); // 7 days from now
   const expirationDateString = expirationDate.toUTCString();
-  const cookie = `session=${sessionId}; HttpOnly; Secure; SameSite=None; expires=${expirationDateString}`;
+  const cookie = `session=${sessionId}; HttpOnly; Secure; Domain=localhost; expires=${expirationDateString}`;
   const existingHeaders = response.headers || {};
   response.headers = {
     ...existingHeaders,
