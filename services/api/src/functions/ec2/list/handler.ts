@@ -13,15 +13,24 @@ import schema from "./schema";
 const ec2 = new EC2Client({});
 
 const ec2list: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
-  event
+  _event
 ) => {
-  const headers = event.headers;
-
   const command = new DescribeInstancesCommand({});
-  const result = await ec2.send(command);
-  console.log(result);
+  const result: DescribeInstancesResult = await ec2.send(command);
 
-  return formatJSONResponse({ headers, result });
+  const filteredInstances = result.Reservations?.flatMap((reservation) =>
+    reservation.Instances.map((instance) => ({
+      InstanceId: instance.InstanceId,
+      InstanceType: instance.InstanceType,
+      LaunchTime: instance.LaunchTime,
+      State: instance.State.Name,
+      PrivateIpAddress: instance.PrivateIpAddress,
+    }))
+  );
+
+  return formatJSONResponse({
+    instances: filteredInstances,
+  });
 };
 
 export const main = middyfy(ec2list);
